@@ -17,7 +17,6 @@ export default function Products() {
         id: number,
     }
 
-    // ✅ جلب البيانات مرة واحدة فقط عند تحميل الصفحة
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -30,7 +29,7 @@ export default function Products() {
         };
 
         fetchProducts();
-    }, []); // ✅ Empty dependency array تمنع التكرار اللانهائي
+    }, []);
 
     return (
         <div className='w-[85%] mt-5 mx-auto'>

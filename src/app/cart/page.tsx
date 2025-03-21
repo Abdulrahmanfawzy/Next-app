@@ -8,7 +8,7 @@ export default function CartPage() {
   const { cart, removeFromCart, clearCart } = useCart();
 
   return (
-    <div className="p-4">
+    <div className="p-4 w-[85%] mx-auto">
       <h2 className="text-2xl font-bold mb-4">Shopping Cart</h2>
       {cart.length === 0 ? (
         <p>Your cart is empty</p>
