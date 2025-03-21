@@ -60,10 +60,10 @@ export default function CategoriesPage() {
                 <img src={product.image} alt={product.title} className="h-40 w-full object-contain mb-2" />
                 <h3 className="text-lg font-semibold">{product.title}</h3>
                 <p className="text-gray-600">${product.price}</p>
-<div className="text-center">
+                <div className="text-center">
                   <Link href={`${product.id}`}><button className="text-gray-600 cursor-pointer border-2 p-2 inline-block mt-3 ">View details</button></Link>
-  
-</div>              </div>
+                </div>
+              </div>
             ))
           ) : (
             <p className="text-gray-500">No products available</p>
