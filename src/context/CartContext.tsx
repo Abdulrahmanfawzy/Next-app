@@ -1,44 +1,43 @@
-"use client"; // ✅ تأكد إن الملف يعمل فقط على الـ Client Side
-
+"use client";
 import { createContext, useContext, useEffect, useState } from "react";
 
-interface CartItem {
+interface Product {
   id: number;
   title: string;
   price: number;
   image: string;
-  quantity: number;
+  quantity: number; // 🆕 دعم الكمية
 }
 
 interface CartContextType {
-  cart: CartItem[];
-  addToCart: (product: CartItem) => void;
+  cart: Product[];
+  addToCart: (product: Product) => void;
   removeFromCart: (id: number) => void;
+  updateQuantity: (id: number, amount: number) => void; // 🆕 تحديث الكمية
   clearCart: () => void;
+  totalPrice: number; // 🆕 السعر الإجمالي
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [isMounted, setIsMounted] = useState(false); // ✅ لحل مشكلة Hydration
+  const [cart, setCart] = useState<Product[]>([]);
 
   useEffect(() => {
-    setIsMounted(true);
-    if (typeof window !== "undefined") {
-      const storedCart = localStorage.getItem("cart");
-      if (storedCart) {
-        setCart(JSON.parse(storedCart));
-      }
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
     }
   }, []);
 
-  if (!isMounted) return null; // ✅ يمنع SSR من توليد HTML مختلف
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
-  const addToCart = (product: CartItem) => {
+  const addToCart = (product: Product) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === product.id);
-      if (existingItem) {
+      const existingProduct = prevCart.find((item) => item.id === product.id);
+      if (existingProduct) {
         return prevCart.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
@@ -51,12 +50,24 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
 
+  const updateQuantity = (id: number, amount: number) => {
+    setCart((prevCart) =>
+      prevCart
+        .map((item) =>
+          item.id === id ? { ...item, quantity: Math.max(item.quantity + amount, 1) } : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+  };
+
   const clearCart = () => {
     setCart([]);
   };
 
+  const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, totalPrice }}>
       {children}
     </CartContext.Provider>
   );
@@ -64,6 +75,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) throw new Error("useCart must be used within a CartProvider");
+  if (!context) {
+    throw new Error("useCart must be used within a CartProvider");
+  }
   return context;
 };
