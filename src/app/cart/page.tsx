@@ -1,45 +1,60 @@
 "use client";
-
 import { useCart } from "@/context/CartContext";
 
-
-
 export default function CartPage() {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const { cart, removeFromCart, updateQuantity, clearCart, totalPrice } = useCart();
 
   return (
-    <div className="p-4 w-[85%] mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Shopping Cart</h2>
+    <div className="w-[85%] mt-5 mx-auto">
+      <h2 className="text-3xl mb-5 text-[#0A9370] font-bold">Cart</h2>
+
       {cart.length === 0 ? (
-        <p>Your cart is empty</p>
+        <p className="text-gray-500">Your cart is empty.</p>
       ) : (
-        <>
-          <ul>
-            {cart.map((item) => (
-              <li key={item.id} className="flex justify-between border-b p-2">
-                <div className="flex items-center">
-                  <img src={item.image} alt={item.title} className="h-12 w-12 object-contain mr-4" />
-                  <span>{item.title}</span>
-                </div>
+        <div>
+          {cart.map((item) => (
+            <div key={item.id} className="border p-4 mb-3 flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <img src={item.image} alt={item.title} className="w-16 h-16 object-contain" />
                 <div>
-                  <span className="mr-4">${item.price} x {item.quantity}</span>
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded"
-                  >
-                    Remove
-                  </button>
+                  <h3 className="text-lg">{item.title}</h3>
+                  <p className="text-gray-500">${item.price}</p>
                 </div>
-              </li>
-            ))}
-          </ul>
-          <button
-            onClick={clearCart}
-            className="bg-gray-500 text-white px-4 py-2 mt-4 rounded"
-          >
+              </div>
+
+              <div className="flex items-center">
+                <button
+                  onClick={() => updateQuantity(item.id, -1)}
+                  className="bg-gray-300 text-black px-3 py-1 rounded-l"
+                >
+                  -
+                </button>
+                <span className="px-4">{item.quantity}</span>
+                <button
+                  onClick={() => updateQuantity(item.id, 1)}
+                  className="bg-gray-300 text-black px-3 py-1 rounded-r"
+                >
+                  +
+                </button>
+              </div>
+
+              <p className="text-lg font-semibold">${item.price * item.quantity}</p>
+
+              <button
+                onClick={() => removeFromCart(item.id)}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+
+          <h3 className="text-xl font-bold mt-5">Total: ${totalPrice.toFixed(2)}</h3>
+
+          <button onClick={clearCart} className="bg-gray-800 text-white px-5 py-2 mt-3 rounded">
             Clear Cart
           </button>
-        </>
+        </div>
       )}
     </div>
   );

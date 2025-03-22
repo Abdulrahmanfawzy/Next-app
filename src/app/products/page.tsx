@@ -51,10 +51,10 @@ export default function Products() {
                                     <img className='mb-3 h-48 w-full object-contain' src={product.image} alt={product.title.split(" ").slice(0,3).join(" ")} />
                                     <h2 className='text-xl font-semibold'>{product.title.split(" ").slice(0,4).join(" ")}</h2>
                                     <p className='my-2'>Category: <strong>{product.category}</strong></p>
-                                    <div className='flex'>
+                                    <div className='flex items-center'>
                                         <button
                                             onClick={() => addToCart(product)}
-                                            className="bg-blue-500 text-white px-4 py-2 mt-2 rounded"
+                                            className="bg-blue-500 text-white px-4 py-3 cursor-pointer text-sm mr-1 mt-2 rounded"
                                         >
                                             Add to Cart
                                         </button>
